@@ -106,7 +106,7 @@ public class CouponService implements CouponServiceIn{
         }
 
         // 3. Check minimum orders placed
-        if (coupon.getMinOrdersPlaced() != null && user.getTotalOrders() > coupon.getMinOrdersPlaced()) {
+        if (coupon.getMinOrdersPlaced() != null && user.getTotalOrders() < coupon.getMinOrdersPlaced()) {
             System.out.println("Rejected: total orders " + user.getTotalOrders() + " < " + coupon.getMinOrdersPlaced());
             return false;
         }
@@ -118,7 +118,7 @@ public class CouponService implements CouponServiceIn{
         }
 
         // 5. Country restriction
-        if (coupon.getAllowedCountries() != null && coupon.getAllowedCountries().contains(user.getCountry())) {
+        if (coupon.getAllowedCountries() != null && !coupon.getAllowedCountries().contains(user.getCountry())) {
             System.out.println("Rejected: country " + user.getCountry() + " not in allowed countries " + coupon.getAllowedCountries());
             return false;
         }
