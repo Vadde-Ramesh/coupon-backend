@@ -10,91 +10,77 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.coupon.Coupon.entity.Cart;
 import com.coupon.Coupon.entity.Coupon;
 import com.coupon.Coupon.entity.User;
+import com.coupon.Coupon.entity.BestCouponRequest;
+import com.coupon.Coupon.entity.Cart;
 import com.coupon.Coupon.service.CouponServiceIn;
 
 @RestController
-@RequestMapping("/coupon")
+@RequestMapping("/api/coupons")
 public class CouponController {
-	
-	private CouponServiceIn couponSer;
-	/**
-	 * Constructor Injection
-	 */
-	public CouponController(CouponServiceIn couponSer) {
-		this.couponSer = couponSer;
-	}
-	/**
-	 * 
-	 * by using @PostMapping Method with @RequestBody Coupon and @path "/addCoupon"
-	 * Add Coupon to Database
-	 * @return saved Coupon 
-	 */
-	
-	@PostMapping("/addCoupon")
-	public ResponseEntity<? > postCoupon(@RequestBody Coupon coupon){
-		Coupon cop = couponSer.postCoupon(coupon);
-		return ResponseEntity.ok(cop);
-	}
-	/**
-	 * @PutMapping Method with @requestBody coupon to Update exist Coupon
-	 * @Path /updateCoupon
-	 * @return updated coupon with updated in database.
-	 */
-	@PutMapping("/updateCoupon")
-	public ResponseEntity<? > updateCoupon(@RequestBody Coupon coupon){
-		Coupon cop = couponSer.updateCoupon(coupon);
-		return ResponseEntity.ok(cop);
-	}
-	/**
-	 * @GetMapping Method to get all the coupons in the database
-	 * @Path /all
-	 * @return  List of Coupons
-	 * and ? shows that this symbol can returns any DataType (List<Coupon>)
-	 */
-	@GetMapping("/all")
-	public ResponseEntity<? > getAllCoupons(){
-		List<Coupon> cop = couponSer.getAll();
-		return ResponseEntity.ok(cop);
-	}
-	/**
-	 * @GetMapping with @path /bestCoupons
-	 * @RequestBody of User and Cart as arguments to get Best Coupons from DB
-	 * @return List of Coupons that sorted from DB or sends No coupons found
-	 */
-	
-	@GetMapping("/bestCoupons")
-	public ResponseEntity<? > getBestCoupon(@RequestBody User user, @RequestBody Cart cart){
-		List<Coupon> cop = couponSer.getBestCoupons(user, cart);
-		if(cop.size()>0) return ResponseEntity.ok(cop);
-		else return ResponseEntity.ok("Coupons not Found");
-	}
-	/**
-	 * @GetMapping with @path /bestUser
-	 * @RequestBody of User as arguments to get Best Coupons from DB
-	 * @return List of Coupons that sorted from DB or sends No coupons found
-	 */
-	
-	@GetMapping("/bestUser")
-	public ResponseEntity<? > getBestUserCoupon(@RequestBody User user){
-		List<Coupon> cop = couponSer.getBestUserCoupons(user);
-		if(cop.size()>0) return ResponseEntity.ok(cop);
-		else return ResponseEntity.ok("Coupons not Found");
-	}
-	/**
-	 * @GetMapping with @path /bestCart
-	 * @RequestBody of Cart as arguments to get Best Coupons from DB
-	 * @return List of Coupons that sorted from DB or sends No coupons found
-	 */
-	
-	@GetMapping("/bestCart")
-	public ResponseEntity<? > getBestCartCoupon(@RequestBody Cart cart){
-		List<Coupon> cop = couponSer.getBestCartCoupons(cart);
-		if(cop.size()>0) return ResponseEntity.ok(cop);
-		else return ResponseEntity.ok("Coupons not Found");
-	}
-	
 
+    private final CouponServiceIn couponService;
+
+    public CouponController(CouponServiceIn couponService) {
+        this.couponService = couponService;
+    }
+
+    // -------------------------
+    // Create a new Coupon
+    // -------------------------
+    @PostMapping("/add")
+    public ResponseEntity<Coupon> createCoupon(@RequestBody Coupon coupon) {
+        Coupon savedCoupon = couponService.createCoupon(coupon);
+        return ResponseEntity.ok(savedCoupon);
+    }
+
+    // -------------------------
+    // Update existing Coupon
+    // -------------------------
+    @PutMapping("/update")
+    public ResponseEntity<Coupon> updateCoupon(@RequestBody Coupon coupon) {
+        Coupon updatedCoupon = couponService.updateCoupon(coupon);
+        return ResponseEntity.ok(updatedCoupon);
+    }
+
+    // -------------------------
+    // Get all coupons
+    // -------------------------
+    @GetMapping("/all")
+    public ResponseEntity<List<Coupon>> getAllCoupons() {
+        List<Coupon> allCoupons = couponService.getAllCoupons();
+        return ResponseEntity.ok(allCoupons);
+    }
+
+    // -------------------------
+    // Get Best Coupon for User + Cart
+    // -------------------------
+    @PostMapping("/best")
+    public ResponseEntity<Coupon> getBestCoupon(@RequestBody BestCouponRequest request) {
+        Coupon bestCoupon = couponService.getBestCoupon(request.getUser(), request.getCart());
+        if (bestCoupon != null) {
+            return ResponseEntity.ok(bestCoupon);
+        } else {
+            return ResponseEntity.ok(null); // or ResponseEntity.noContent().build();
+        }
+    }
+
+    // -------------------------
+    // Get Best Coupon for User Only
+    // -------------------------
+    @PostMapping("/best/user")
+    public ResponseEntity<List<Coupon>> getBestCouponsForUser(@RequestBody User user) {
+        List<Coupon> coupons = couponService.getBestCouponsForUser(user);
+        return ResponseEntity.ok(coupons);
+    }
+
+    // -------------------------
+    // Get Best Coupon for Cart Only
+    // -------------------------
+    @PostMapping("/best/cart")
+    public ResponseEntity<List<Coupon>> getBestCouponsForCart(@RequestBody Cart cart) {
+        List<Coupon> coupons = couponService.getBestCouponsForCart(cart);
+        return ResponseEntity.ok(coupons);
+    }
 }

@@ -1,205 +1,94 @@
 package com.coupon.Coupon.entity;
 
 import java.time.LocalDate;
-
-import com.coupon.Coupon.enms.CountryType;
-import com.coupon.Coupon.enms.DiscountType;
-import com.coupon.Coupon.enms.ProductCategory;
-import com.coupon.Coupon.enms.UserType;
+import java.util.List;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import com.coupon.Coupon.enms.DiscountType;
+import com.coupon.Coupon.enms.ProductCategory;
+import com.coupon.Coupon.enms.UserType;
+import com.coupon.Coupon.enms.CountryType;
 
 @Entity
+@Table(name = "coupons")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Coupon {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	private String id;
-	
-	private String code;
-	@Column(name = "description")
-	private String desc;
-	
-	private DiscountType discountType;
-	
-	private double discountValue;
-	
-	private double maxDiscount;
-	
-	private double minLifeTimeSpend;
-	
-	private int minOrdersPlaced;
-	
-	@Column(name = "start_date")
-	private LocalDate start;
 
-	@Column(name = "end_date")
-	private LocalDate end;
-	
-	private int usageLimit;
-	
-	private UserType eligibility;
-	
-	private CountryType countryType;
-	
-	private double minCartValue;
-	
-	private ProductCategory productCategory;
-	
-	private Long cartItems;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
-	public String getId() {
-		return id;
-	}
+    @Column(unique = true, nullable = false)
+    private String code;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private String description;
 
-	public String getCode() {
-		return code;
-	}
+    @Enumerated(EnumType.STRING)
+    private DiscountType discountType;   // FLAT or PERCENT
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    private double discountValue;        // 100 for flat, 10 for percent
 
-	public String getDesc() {
-		return desc;
-	}
+    private Double maxDiscountAmount;    // optional, only for percent
 
-	public void setDesc(String desc) {
-		this.desc = desc;
-	}
+    /**
+     *  ---------- Validity Window ----------
+     */
+    private LocalDate startDate;
+    private LocalDate endDate;
 
-	public DiscountType getDiscountType() {
-		return discountType;
-	}
+    /**
+     *  ---------- Usage Limit ----------
+     */
+    private Integer usageLimitPerUser;   // nullable means unlimited
 
-	public void setDiscountType(DiscountType discountType) {
-		this.discountType = discountType;
-	}
+    /**
+     *  ---------- USER Based Eligibility ---------
+     */
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_tier")
+    private List<UserType> allowedUserTiers;
 
-	public double getDiscountValue() {
-		
-		return discountValue;
-	}
+    private Double minLifetimeSpend;
+    private Integer minOrdersPlaced;
 
-	public void setDiscountValue(double discountValue) {
-		this.discountValue = discountValue;
-	}
+    private Boolean firstOrderOnly;
 
-	public double getMaxDiscount() {
-		return maxDiscount;
-	}
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "country")
+    private List<CountryType> allowedCountries;
 
-	public void setMaxDiscount(double maxDiscount) {
-		this.maxDiscount = maxDiscount;
-	}
+     /**
+      * ---------- CART Based Eligibility ----------
+      */
+    private Double minCartValue;
 
-	public double getMinLifeTimeSpend() {
-		return minLifeTimeSpend;
-	}
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category")
+    private List<ProductCategory> applicableCategories;
 
-	public void setMinLifeTimeSpend(double minLifeTimeSpend) {
-		this.minLifeTimeSpend = minLifeTimeSpend;
-	}
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category")
+    private List<ProductCategory> excludedCategories;
 
-	public int getMinOrdersPlaced() {
-		return minOrdersPlaced;
-	}
-
-	public void setMinOrdersPlaced(int minOrdersPlaced) {
-		this.minOrdersPlaced = minOrdersPlaced;
-	}
-
-	public LocalDate getStart() {
-		return start;
-	}
-
-	public void setStart(LocalDate start) {
-		this.start = start;
-	}
-
-	public LocalDate getEnd() {
-		return end;
-	}
-
-	public void setEnd(LocalDate end) {
-		this.end = end;
-	}
-
-	public int getUsageLimit() {
-		return usageLimit;
-	}
-
-	public void setUsageLimit(int usageLimit) {
-		this.usageLimit = usageLimit;
-	}
-
-	public UserType getEligibility() {
-		return eligibility;
-	}
-
-	public void setEligibility(UserType eligibility) {
-		this.eligibility = eligibility;
-	}
-
-	public CountryType getCountryType() {
-		return countryType;
-	}
-
-	public void setCountryType(CountryType countryType) {
-		this.countryType = countryType;
-	}
-
-	public double getMinCartValue() {
-		return minCartValue;
-	}
-
-	public void setMinCartValue(double minCartValue) {
-		this.minCartValue = minCartValue;
-	}
-
-	public ProductCategory getProductCategory() {
-		return productCategory;
-	}
-
-	public void setProductCategory(ProductCategory productCategory) {
-		this.productCategory = productCategory;
-	}
-
-	public Long getCartItems() {
-		return cartItems;
-	}
-
-	public void setCartItems(Long cartItems) {
-		this.cartItems = cartItems;
-	}
-
+    private Integer minItemsCount;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

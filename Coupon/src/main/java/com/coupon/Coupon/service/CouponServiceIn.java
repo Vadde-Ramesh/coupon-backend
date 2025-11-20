@@ -9,16 +9,17 @@ import com.coupon.Coupon.entity.User;
 public interface CouponServiceIn {
 
 	
-	Coupon postCoupon(Coupon coupon);
+
+	Coupon createCoupon(Coupon coupon);
 
 	Coupon updateCoupon(Coupon coupon);
 
-	List<Coupon> getAll();
+	List<Coupon> getAllCoupons();
 
-	List<Coupon> getBestCoupons(User user, Cart cart);
+	List<Coupon> getBestCouponsForUser(User user);
 
-	List<Coupon> getBestUserCoupons(User user);
+	List<Coupon> getBestCouponsForCart(Cart cart);
 
-	List<Coupon> getBestCartCoupons(Cart cart);
+	Coupon getBestCoupon(User user, Cart cart);
 
 }

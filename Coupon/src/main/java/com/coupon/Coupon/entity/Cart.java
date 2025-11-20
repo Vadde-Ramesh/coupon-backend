@@ -1,44 +1,40 @@
 package com.coupon.Coupon.entity;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Table(name = "carts")
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Cart {
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	private String id;
-	@OneToMany
-	private List<Product> products = new ArrayList<>();
-	
-	private int numberItems;
 
-	public List<Product> getItems() {
-		return this.products;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
-	public double getTotalSum() {
-		return products.stream().mapToDouble(Product::getPrice).sum();
-	}
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Product> products;
 
-	
+    // Helper methods for cart-based calculations
+    public double getTotalAmount() {
+        return products.stream().mapToDouble(p -> p.getUnitPrice() * p.getQuantity()).sum();
+    }
+
+    public int getTotalItems() {
+        return products.stream().mapToInt(Product::getQuantity).sum();
+    }
 }
-
-
-
-
-
-
-
