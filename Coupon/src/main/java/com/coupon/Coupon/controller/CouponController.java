@@ -1,6 +1,7 @@
 package com.coupon.Coupon.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -82,7 +83,9 @@ public class CouponController {
     @PostMapping("/best/user")
     public ResponseEntity<List<Coupon>> getBestCouponsForUser(@RequestBody User user) {
         List<Coupon> coupons = couponService.getBestCouponsForUser(user);
-        return ResponseEntity.ok(coupons);
+        return ResponseEntity.ok(coupons.stream()
+                .sorted((c1, c2) -> Double.compare(c2.getDiscountValue(), c1.getDiscountValue()))
+                .collect(Collectors.toList()));
     }
     /**
      * Get Best Coupon for User Only
@@ -92,6 +95,8 @@ public class CouponController {
     @PostMapping("/best/cart")
     public ResponseEntity<List<Coupon>> getBestCouponsForCart(@RequestBody Cart cart) {
         List<Coupon> coupons = couponService.getBestCouponsForCart(cart);
-        return ResponseEntity.ok(coupons);
+        return ResponseEntity.ok(coupons.stream()
+                .sorted((c1, c2) -> Double.compare(c2.getDiscountValue(), c1.getDiscountValue()))
+                .collect(Collectors.toList()));
     }
 }
