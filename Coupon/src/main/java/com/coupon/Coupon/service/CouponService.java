@@ -91,13 +91,40 @@ public class CouponService implements CouponServiceIn{
     }
 
     private boolean isUserEligible(Coupon coupon, User user) {
-        if (coupon.getAllowedUserTiers() != null && !coupon.getAllowedUserTiers().contains(user.getUserTier())) return false;
-        if (coupon.getMinLifetimeSpend() != null && user.getLifeTimeSpend() < coupon.getMinLifetimeSpend()) return false;
-        if (coupon.getMinOrdersPlaced() != null && user.getTotalOrders() < coupon.getMinOrdersPlaced()) return false;
-        if (coupon.getFirstOrderOnly() != null && coupon.getFirstOrderOnly() && user.getTotalOrders() > 0) return false;
-        if (coupon.getAllowedCountries() != null && !coupon.getAllowedCountries().contains(user.getCountry())) return false;
+        // 1. Check user tier
+        if (coupon.getAllowedUserTiers() != null && !coupon.getAllowedUserTiers().contains(user.getUserTier())) {
+            System.out.println("Rejected: user tier " + user.getUserTier() + " not in allowed tiers " + coupon.getAllowedUserTiers());
+            return false;
+        }
+
+        // 2. Check lifetime spend
+        if (coupon.getMinLifetimeSpend() != null && user.getLifeTimeSpend() < coupon.getMinLifetimeSpend()) {
+            System.out.println("Rejected: lifetime spend " + user.getLifeTimeSpend() + " < " + coupon.getMinLifetimeSpend());
+            return false;
+        }
+
+        // 3. Check minimum orders placed
+        if (coupon.getMinOrdersPlaced() != null && user.getTotalOrders() > coupon.getMinOrdersPlaced()) {
+            System.out.println("Rejected: total orders " + user.getTotalOrders() + " < " + coupon.getMinOrdersPlaced());
+            return false;
+        }
+
+        // 4. First order only restriction
+        if (coupon.getFirstOrderOnly() != null && coupon.getFirstOrderOnly() && user.getTotalOrders() > 0) {
+            System.out.println("Rejected: firstOrderOnly is true but user already has orders " + user.getTotalOrders());
+            return false;
+        }
+
+        // 5. Country restriction
+        if (coupon.getAllowedCountries() != null && coupon.getAllowedCountries().contains(user.getCountry())) {
+            System.out.println("Rejected: country " + user.getCountry() + " not in allowed countries " + coupon.getAllowedCountries());
+            return false;
+        }
+
+        // 6. Passed all checks
         return true;
     }
+
 
     private boolean isCartEligible(Coupon coupon, Cart cart) {
         if (coupon.getMinCartValue() != null && cart.getTotalAmount() < coupon.getMinCartValue()) return false;

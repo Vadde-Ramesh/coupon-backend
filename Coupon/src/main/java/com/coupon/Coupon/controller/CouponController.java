@@ -70,17 +70,17 @@ public class CouponController {
     // Get Best Coupon for User Only
     // -------------------------
     @PostMapping("/best/user")
-    public ResponseEntity<List<Coupon>> getBestCouponsForUser(@RequestBody User user) {
+    public ResponseEntity<?> getBestCouponsForUser(@RequestBody User user) {
         List<Coupon> coupons = couponService.getBestCouponsForUser(user);
-        return ResponseEntity.ok(coupons);
+        return coupons.size()>0 ? ResponseEntity.ok(coupons) : ResponseEntity.ok("No Coupons Found");
     }
 
     // -------------------------
     // Get Best Coupon for Cart Only
     // -------------------------
     @PostMapping("/best/cart")
-    public ResponseEntity<List<Coupon>> getBestCouponsForCart(@RequestBody Cart cart) {
+    public ResponseEntity<?> getBestCouponsForCart(@RequestBody Cart cart) {
         List<Coupon> coupons = couponService.getBestCouponsForCart(cart);
-        return ResponseEntity.ok(coupons);
+        return coupons.size()>0 ? ResponseEntity.ok(coupons) : ResponseEntity.ok("No Coupons Found");
     }
 }

@@ -3,6 +3,7 @@ package com.coupon.Coupon.entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -11,6 +12,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,22 +48,17 @@ public class Coupon {
 
     private Double maxDiscountAmount;    // optional, only for percent
 
-    /**
-     *  ---------- Validity Window ----------
-     */
+    // ---------- Validity Window ----------
     private LocalDate startDate;
     private LocalDate endDate;
 
-    /**
-     *  ---------- Usage Limit ----------
-     */
+    // ---------- Usage Limit ----------
     private Integer usageLimitPerUser;   // nullable means unlimited
 
-    /**
-     *  ---------- USER Based Eligibility ---------
-     */
+    // ---------- USER Based Eligibility ---------
     @ElementCollection
     @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "coupon_user_tiers", joinColumns = @JoinColumn(name = "coupon_id"))
     @Column(name = "user_tier")
     private List<UserType> allowedUserTiers;
 
@@ -70,23 +67,24 @@ public class Coupon {
 
     private Boolean firstOrderOnly;
 
-    
+    @ElementCollection
     @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "coupon_allowed_countries", joinColumns = @JoinColumn(name = "coupon_id"))
     @Column(name = "country")
     private List<CountryType> allowedCountries;
 
-     /**
-      * ---------- CART Based Eligibility ----------
-      */
+    // ---------- CART Based Eligibility ----------
     private Double minCartValue;
 
-    
+    @ElementCollection
     @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "coupon_applicable_categories", joinColumns = @JoinColumn(name = "coupon_id"))
     @Column(name = "category")
     private List<ProductCategory> applicableCategories;
 
     @ElementCollection
     @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "coupon_excluded_categories", joinColumns = @JoinColumn(name = "coupon_id"))
     @Column(name = "category")
     private List<ProductCategory> excludedCategories;
 
