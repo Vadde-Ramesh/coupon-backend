@@ -22,40 +22,51 @@ public class CouponController {
 
     private final CouponServiceIn couponService;
 
+    /**
+     * 
+     *  Constructor injection
+     */
     public CouponController(CouponServiceIn couponService) {
         this.couponService = couponService;
     }
 
-    // -------------------------
-    // Create a new Coupon
-    // -------------------------
+    /**
+     * 
+     * @RequestBody Takes coupon as Argument and saves coupon into DB
+     * @return saved Coupon
+     */
     @PostMapping("/add")
     public ResponseEntity<Coupon> createCoupon(@RequestBody Coupon coupon) {
         Coupon savedCoupon = couponService.createCoupon(coupon);
         return ResponseEntity.ok(savedCoupon);
     }
 
-    // -------------------------
-    // Update existing Coupon
-    // -------------------------
+    /**
+     * 
+     * @RequestBody Takes Coupon as argument 
+     * @return Updated coupon
+     */
     @PutMapping("/update")
     public ResponseEntity<Coupon> updateCoupon(@RequestBody Coupon coupon) {
         Coupon updatedCoupon = couponService.updateCoupon(coupon);
         return ResponseEntity.ok(updatedCoupon);
     }
 
-    // -------------------------
-    // Get all coupons
-    // -------------------------
+    /**
+     * No input
+     * @return return all the coupons from DB
+     */
     @GetMapping("/all")
     public ResponseEntity<List<Coupon>> getAllCoupons() {
         List<Coupon> allCoupons = couponService.getAllCoupons();
         return ResponseEntity.ok(allCoupons);
     }
 
-    // -------------------------
-    // Get Best Coupon for User + Cart
-    // -------------------------
+    /**
+     * Get Best Coupon for User + Cart
+     * @param BestCouponRequest as request bzc Spring not allows 2 RequestBodys at a time
+     * @return best Coupons valid for both user and cart
+     */
     @PostMapping("/best")
     public ResponseEntity<Coupon> getBestCoupon(@RequestBody BestCouponRequest request) {
         Coupon bestCoupon = couponService.getBestCoupon(request.getUser(), request.getCart());
@@ -63,18 +74,21 @@ public class CouponController {
         
     }
 
-    // -------------------------
-    // Get Best Coupon for User Only
-    // -------------------------
+    /**
+     * Get Best Coupon for User Only
+     * @RequestBody Takes  user input
+     * @return best Coupons based on user
+     */
     @PostMapping("/best/user")
     public ResponseEntity<List<Coupon>> getBestCouponsForUser(@RequestBody User user) {
         List<Coupon> coupons = couponService.getBestCouponsForUser(user);
         return ResponseEntity.ok(coupons);
     }
-
-    // -------------------------
-    // Get Best Coupon for Cart Only
-    // -------------------------
+    /**
+     * Get Best Coupon for User Only
+     * @RequestBody Takes  Cart input
+     * @return best Coupons based on Cart
+     */
     @PostMapping("/best/cart")
     public ResponseEntity<List<Coupon>> getBestCouponsForCart(@RequestBody Cart cart) {
         List<Coupon> coupons = couponService.getBestCouponsForCart(cart);
