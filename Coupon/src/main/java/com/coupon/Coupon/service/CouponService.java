@@ -1,17 +1,14 @@
 package com.coupon.Coupon.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.coupon.Coupon.entity.Coupon;
 import com.coupon.Coupon.entity.Product;
-import com.coupon.Coupon.enms.ProductCategory;
 import com.coupon.Coupon.entity.Cart;
 import com.coupon.Coupon.entity.User;
 import com.coupon.Coupon.repository.CouponRepository;

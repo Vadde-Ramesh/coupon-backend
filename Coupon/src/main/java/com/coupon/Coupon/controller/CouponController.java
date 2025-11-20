@@ -59,28 +59,25 @@ public class CouponController {
     @PostMapping("/best")
     public ResponseEntity<Coupon> getBestCoupon(@RequestBody BestCouponRequest request) {
         Coupon bestCoupon = couponService.getBestCoupon(request.getUser(), request.getCart());
-        if (bestCoupon != null) {
-            return ResponseEntity.ok(bestCoupon);
-        } else {
-            return ResponseEntity.ok(null); // or ResponseEntity.noContent().build();
-        }
+        return ResponseEntity.ok(bestCoupon);
+        
     }
 
     // -------------------------
     // Get Best Coupon for User Only
     // -------------------------
     @PostMapping("/best/user")
-    public ResponseEntity<?> getBestCouponsForUser(@RequestBody User user) {
+    public ResponseEntity<List<Coupon>> getBestCouponsForUser(@RequestBody User user) {
         List<Coupon> coupons = couponService.getBestCouponsForUser(user);
-        return coupons.size()>0 ? ResponseEntity.ok(coupons) : ResponseEntity.ok("No Coupons Found");
+        return ResponseEntity.ok(coupons);
     }
 
     // -------------------------
     // Get Best Coupon for Cart Only
     // -------------------------
     @PostMapping("/best/cart")
-    public ResponseEntity<?> getBestCouponsForCart(@RequestBody Cart cart) {
+    public ResponseEntity<List<Coupon>> getBestCouponsForCart(@RequestBody Cart cart) {
         List<Coupon> coupons = couponService.getBestCouponsForCart(cart);
-        return coupons.size()>0 ? ResponseEntity.ok(coupons) : ResponseEntity.ok("No Coupons Found");
+        return ResponseEntity.ok(coupons);
     }
 }
