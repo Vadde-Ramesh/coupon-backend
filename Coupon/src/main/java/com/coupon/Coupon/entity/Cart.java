@@ -1,5 +1,6 @@
 package com.coupon.Coupon.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -27,7 +28,7 @@ public class Cart {
     private String id;
 
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
 
     // Helper methods for cart-based calculations
     public double getTotalAmount() {

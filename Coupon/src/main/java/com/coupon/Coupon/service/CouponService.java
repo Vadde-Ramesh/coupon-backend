@@ -1,12 +1,17 @@
 package com.coupon.Coupon.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.coupon.Coupon.entity.Coupon;
+import com.coupon.Coupon.entity.Product;
+import com.coupon.Coupon.enms.ProductCategory;
 import com.coupon.Coupon.entity.Cart;
 import com.coupon.Coupon.entity.User;
 import com.coupon.Coupon.repository.CouponRepository;
@@ -125,24 +130,74 @@ public class CouponService implements CouponServiceIn{
         return true;
     }
 
-
     private boolean isCartEligible(Coupon coupon, Cart cart) {
-        if (coupon.getMinCartValue() != null && cart.getTotalAmount() < coupon.getMinCartValue()) return false;
-        if (coupon.getMinItemsCount() != null && cart.getTotalItems() < coupon.getMinItemsCount()) return false;
-
-        if (coupon.getApplicableCategories() != null) {
-            boolean hasCategory = cart.getProducts().stream()
-                    .anyMatch(p -> coupon.getApplicableCategories().contains(p.getCategory()));
-            if (!hasCategory) return false;
+        // 1. Null-safe check for cart and products
+        if (cart == null || cart.getProducts() == null || cart.getProducts().isEmpty()) {
+            System.out.println("Cart is empty or null");
+            return false;
         }
 
-        if (coupon.getExcludedCategories() != null) {
-            boolean hasExcluded = cart.getProducts().stream()
-                    .anyMatch(p -> coupon.getExcludedCategories().contains(p.getCategory()));
-            if (hasExcluded) return false;
+        // 2. Minimum cart value
+        if (coupon.getMinCartValue() != null && cart.getTotalAmount() < coupon.getMinCartValue()) {
+            System.out.println("Cart total " + cart.getTotalAmount() + " < minCartValue " + coupon.getMinCartValue());
+            return false;
         }
+
+        // 3. Minimum items count
+        if (coupon.getMinItemsCount() != null && cart.getTotalItems() < coupon.getMinItemsCount()) {
+            System.out.println("Cart items " + cart.getTotalItems() + " < minItemsCount " + coupon.getMinItemsCount());
+            return false;
+        }
+
+     // 4. Applicable categories
+        if (coupon.getApplicableCategories() != null && !coupon.getApplicableCategories().isEmpty()) {
+
+            List<String> allowedCategories = coupon.getApplicableCategories().stream()
+                    .map(Enum::toString)
+                    .collect(Collectors.toList());
+
+            List<String> cartCategories = cart.getProducts().stream()
+                    .map(Product::getCategory)
+                    .filter(Objects::nonNull)
+                    .map(Enum::toString)
+                    .collect(Collectors.toList());
+
+            boolean matchFound = allowedCategories.stream()
+                    .anyMatch(cartCategories::contains);
+
+            if (!matchFound) {
+                System.out.println("Cart does not contain applicable categories " + allowedCategories);
+                return false;
+            }
+        }
+
+
+
+        // 5. Excluded categories
+        if (coupon.getExcludedCategories() != null && !coupon.getExcludedCategories().isEmpty()) {
+            List<String> excludedCategories = coupon.getExcludedCategories().stream()
+                    .map(Enum::toString)
+                    .collect(Collectors.toList());
+
+            List<String> cartCategories = cart.getProducts().stream()
+                    .map(Product::getCategory)
+                    .filter(Objects::nonNull)
+                    .map(Enum::toString)
+                    .collect(Collectors.toList());
+
+            // Check if any excluded category is present
+            excludedCategories.retainAll(cartCategories);
+            if (!excludedCategories.isEmpty()) {
+                System.out.println("Cart contains excluded categories: " + excludedCategories);
+                return false;
+            }
+        }
+
+        // 6. Passed all checks
         return true;
     }
+
+
 
     // -------------------------
     // Compare coupons (best selection)
